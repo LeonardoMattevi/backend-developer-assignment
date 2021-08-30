@@ -8,7 +8,7 @@ import routesErrorsLogger from '../middleware/routesErrors';
 
 export default function(app: Application) {
     app.use('/', homeRoute);
-    app.use('/api/node', itemsRoute);
+    app.use('/api/nodes', itemsRoute);
 
     app.use(routesErrorsLogger);
 }

@@ -25,11 +25,12 @@ router.get('/', async function(req: Request, res: Response) {
         if(!req.query.node_id || !req.query.language)
             throw new HttpError('Missing mandatory params', 400);
 
+        // format quey params
         const nodeId: number = +(req.query.node_id || 0);
         const language: string = req.query.language ? req.query.language + '' : 'italian';
         const searchKeyword: string = req.query.search_keyword ? req.query.search_keyword + '': '';
         const pageNum: number = req.query.page_num ? +req.query.page_num : 0;
-        const pageSize: number = req.query.page_size ? +req.query.page_size : 100;
+        const pageSize: number = req.query.page_size ? +req.query.page_size < 100 ? +req.query.page_size : 100 : 100;
         
         const node: NodeTree = await NodeService.getNode(nodeId, language);
         if(!node)
@@ -40,13 +41,13 @@ router.get('/', async function(req: Request, res: Response) {
             t.push({
                 node_id: n.idNode,
                 name: n.nodeName,
-                children_count: (((n.iRight- 1) - n.iLeft) / 2)
+                children_count: ((n.iRight- 1) - n.iLeft) / 2
             } as NodeItem)
             return t;
         }, []);
     
     } catch(err) {
-        response.error = err.message;
+        response.error = err.message || err;
         res.statusCode = err.statusCode || 500 
     }
     res.send(response);    
